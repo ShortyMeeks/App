@@ -1,0 +1,122 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isUser(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() && (
+        request.auth.token.role == 'admin' ||
+        request.auth.token.role == 'administrator' ||
+        request.auth.token.admin == true
+      );
+    }
+
+    function hasActiveConsent(studentId) {
+      return isAuthenticated() && (
+        exists(/databases/$(database)/documents/consents/consent_$(studentId)_$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/consents/consent_$(studentId)_$(request.auth.uid)).data.studentId == studentId &&
+        get(/databases/$(database)/documents/consents/consent_$(studentId)_$(request.auth.uid)).data.teacherId == request.auth.uid &&
+        get(/databases/$(database)/documents/consents/consent_$(studentId)_$(request.auth.uid)).data.isRevoked == false
+      );
+    }
+
+    // 1. Users Collection: Strict Whitelist on Update
+    match /users/{userId} {
+      allow read: if isAuthenticated();
+
+      allow create: if isUser(userId) && (
+        (!('role' in request.resource.data) || request.resource.data.role == 'student') &&
+        (!('isApproved' in request.resource.data) || request.resource.data.isApproved == true || request.resource.data.isApproved == false)
+      );
+
+      allow update: if (
+        isUser(userId) &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['fullName', 'studentNumber', 'updatedAt']) &&
+        request.resource.data.role == resource.data.role &&
+        request.resource.data.isApproved == resource.data.isApproved &&
+        request.resource.data.email == resource.data.email
+      ) || isAdmin();
+
+      allow delete: if isAdmin();
+    }
+
+    // 2. Consents Collection
+    match /consents/{consentId} {
+      allow read: if isAuthenticated() && (
+        resource.data.studentId == request.auth.uid ||
+        resource.data.teacherId == request.auth.uid ||
+        isAdmin()
+      );
+
+      allow create: if isAuthenticated() &&
+        request.resource.data.studentId == request.auth.uid &&
+        request.resource.data.isRevoked == false;
+
+      allow update: if isAuthenticated() && (
+        (
+          resource.data.studentId == request.auth.uid &&
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['isRevoked', 'revokedTimestamp', 'updatedAt']) &&
+          request.resource.data.isRevoked == true &&
+          request.resource.data.studentId == resource.data.studentId &&
+          request.resource.data.teacherId == resource.data.teacherId
+        ) || isAdmin()
+      );
+
+      allow delete: if isAdmin();
+    }
+
+    // 3. Students / Student Profiles Collection
+    match /students/{studentId} {
+      allow read: if isUser(studentId) || hasActiveConsent(studentId) || isAdmin();
+      allow create, update: if isUser(studentId) || isAdmin();
+      allow delete: if isUser(studentId) || isAdmin();
+    }
+
+    match /studentProfiles/{profileId} {
+      allow read: if isUser(profileId) || hasActiveConsent(profileId) || isAdmin();
+      allow create, update: if isUser(profileId) || isAdmin();
+      allow delete: if isUser(profileId) || isAdmin();
+    }
+
+    // 4. Audit Logs Collection
+    match /auditLogs/{logId} {
+      allow create: if isAuthenticated() &&
+        request.resource.data.actorUid == request.auth.uid;
+
+      allow read: if isAuthenticated() && (
+        ('studentId' in resource.data && resource.data.studentId == request.auth.uid) ||
+        ('studentUid' in resource.data && resource.data.studentUid == request.auth.uid) ||
+        ('teacherId' in resource.data && resource.data.teacherId == request.auth.uid) ||
+        ('teacherUid' in resource.data && resource.data.teacherUid == request.auth.uid) ||
+        resource.data.actorUid == request.auth.uid ||
+        isAdmin()
+      );
+
+      allow update, delete: if false;
+    }
+
+    match /audit_logs/{logId} {
+      allow create: if isAuthenticated() &&
+        request.resource.data.actorUid == request.auth.uid;
+
+      allow read: if isAuthenticated() && (
+        ('studentId' in resource.data && resource.data.studentId == request.auth.uid) ||
+        ('studentUid' in resource.data && resource.data.studentUid == request.auth.uid) ||
+        ('teacherId' in resource.data && resource.data.teacherId == request.auth.uid) ||
+        ('teacherUid' in resource.data && resource.data.teacherUid == request.auth.uid) ||
+        resource.data.actorUid == request.auth.uid ||
+        isAdmin()
+      );
+
+      allow update, delete: if false;
+    }
+
+  }
+}

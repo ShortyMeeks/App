@@ -1,0 +1,149 @@
+[debug] [2026-11-07T22:19:20.841Z] ----------------------------------------------------------------------
+[debug] [2026-11-07T22:19:20.843Z] Command:       /usr/local/bin/node /usr/local/bin/firebase emulators:exec --only firestore node test-rules.js
+[debug] [2026-11-07T22:19:20.844Z] CLI Version:   15.34.1
+[debug] [2026-11-07T22:19:20.844Z] Platform:      linux
+[debug] [2026-11-07T22:19:20.844Z] Node Version:  v22.23.3
+[debug] [2026-11-07T22:19:20.845Z] Detected Agent: unknown
+[debug] [2026-11-07T22:19:20.845Z] Time:          Sat Nov 07 2026 22:19:20 GMT+0000 (Coordinated Universal Time)
+[debug] [2026-11-07T22:19:20.845Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2026-11-07T22:19:22.791Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-11-07T22:19:22.867Z] Running auto auth
+[debug] [2026-11-07T22:19:22.944Z] openjdk version "21.0.13" 2026-10-20 LTS
+
+[debug] [2026-11-07T22:19:22.944Z] OpenJDK Runtime Environment Temurin-21.0.13+9 (build 21.0.13+9-LTS)
+OpenJDK 64-Bit Server VM Temurin-21.0.13+9 (build 21.0.13+9-LTS, mixed mode, sharing)
+
+[debug] [2026-11-07T22:19:22.947Z] Parsed Java major version: 21
+[info] i  emulators: Starting emulators: firestore {"metadata":{"emulator":{"name":"hub"},"message":"Starting emulators: firestore"}}
+[info] i  emulators: Detected demo project ID "demo-no-project", emulated services will use a demo configuration and attempts to access non-emulated services for this project will fail. {"metadata":{"emulator":{"name":"hub"},"message":"Detected demo project ID \"demo-no-project\", emulated services will use a demo configuration and attempts to access non-emulated services for this project will fail."}}
+[debug] [2026-11-07T22:19:22.960Z] [logging] Logging Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2026-11-07T22:19:22.961Z] [firestore] Firestore Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2026-11-07T22:19:22.961Z] [firestore.websocket] websocket server for firestore only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2026-11-07T22:19:22.961Z] assigned listening specs for emulators {"user":{"hub":[{"address":"127.0.0.1","family":"IPv4","port":4400},{"address":"::1","family":"IPv6","port":4400}],"logging":[{"address":"127.0.0.1","family":"IPv4","port":4500}],"firestore":[{"address":"127.0.0.1","family":"IPv4","port":8080}],"firestore.websocket":[{"address":"127.0.0.1","family":"IPv4","port":9150}]},"metadata":{"message":"assigned listening specs for emulators"}}
+[debug] [2026-11-07T22:19:22.965Z] Write emulator hub locator at /tmp/hub-demo-no-project.json
+[debug] [2026-11-07T22:19:22.972Z] Ignoring unsupported arg: auto_download {"metadata":{"emulator":{"name":"firestore"},"message":"Ignoring unsupported arg: auto_download"}}
+[debug] [2026-11-07T22:19:22.972Z] Ignoring unsupported arg: single_project_mode_error {"metadata":{"emulator":{"name":"firestore"},"message":"Ignoring unsupported arg: single_project_mode_error"}}
+[debug] [2026-11-07T22:19:22.972Z] Starting Firestore Emulator with command {"binary":"java","args":["-Dgoogle.cloud_firestore.debug_log_level=FINE","-Duser.language=en","-jar","/opt/firebase-emulators/cloud-firestore-emulator-v1.22.0.jar","--host","127.0.0.1","--port",8080,"--websocket_port",9150,"--database-edition","standard","--project_id","demo-no-project","--rules","/app/applet/firestore.rules","--single_project_mode",true],"optionalArgs":["port","webchannel_port","host","rules","websocket_port","database-edition","functions_emulator","seed_from_export","project_id","single_project_mode"],"joinArgs":false,"shell":false,"port":8080} {"metadata":{"emulator":{"name":"firestore"},"message":"Starting Firestore Emulator with command {\"binary\":\"java\",\"args\":[\"-Dgoogle.cloud_firestore.debug_log_level=FINE\",\"-Duser.language=en\",\"-jar\",\"/opt/firebase-emulators/cloud-firestore-emulator-v1.22.0.jar\",\"--host\",\"127.0.0.1\",\"--port\",8080,\"--websocket_port\",9150,\"--database-edition\",\"standard\",\"--project_id\",\"demo-no-project\",\"--rules\",\"/app/applet/firestore.rules\",\"--single_project_mode\",true],\"optionalArgs\":[\"port\",\"webchannel_port\",\"host\",\"rules\",\"websocket_port\",\"database-edition\",\"functions_emulator\",\"seed_from_export\",\"project_id\",\"single_project_mode\"],\"joinArgs\":false,\"shell\":false,\"port\":8080}"}}
+[info] i  firestore: Firestore Emulator logging to firestore-debug.log {"metadata":{"emulator":{"name":"firestore"},"message":"Firestore Emulator logging to firestore-debug.log"}}
+[info] ✔  firestore: Firestore Emulator was started in standard edition. {"metadata":{"emulator":{"name":"firestore"},"message":"Firestore Emulator was started in standard edition."}}
+[info] ✔  firestore: Firestore Emulator UI websocket is running on 9150. {"metadata":{"emulator":{"name":"firestore"},"message":"Firestore Emulator UI websocket is running on 9150."}}
+[debug] [2026-11-07T22:19:23.023Z] Could not find VSCode notification endpoint: TypeError: fetch failed. If you are not running the Firebase SQL Connect VSCode extension, this is expected and not an issue.
+[info] i  Running script: node test-rules.js 
+[debug] [2026-11-07T22:19:23.028Z] Running node test-rules.js with environment {"GOOGLE_RUNTIME":"nodejs22","LANGUAGE":"en_US:en","NO_UPDATE_NOTIFIER":"true","FIREBASE_EMULATORS_PATH":"/opt/firebase-emulators","NODE_VERSION":"22.23.3","APP_URL":"https://ais-dev-byek27z27k3f4mepjz2tel-88815613931.us-east1.run.app","K_REVISION":"ais-dev-byek27z27k3f4mepjz2tel-00001-hcn","CONTROL_PLANE_PORT":"8000","YARN_VERSION":"1.22.22","DEFAULT_APP_PORT":"3000","SHLVL":"0","HOME":"/root","PORT":"8080","NODE_OPTIONS":"--max-old-space-size=4096","NG_ALLOWED_HOSTS":"ais-dev-byek27z27k3f4mepjz2tel-88815613931.us-east1.run.app","CLOUD_RUN_TIMEOUT_SECONDS":"3600","K_CONFIGURATION":"ais-dev-byek27z27k3f4mepjz2tel","APPLET_ID":"937358ee-e1f6-4d6d-98f8-cec10cc45a8e","_":"/app/control-plane-api/control-plane-api","APPLET_DIR":"applet","GOMEMLIMIT":"512MiB","CONTROL_PLANE_API_DIR":"control-plane-api","PATH":"/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/opt/android/sdk/cmdline-tools/latest/bin:/opt/android/sdk/platform-tools:/opt/gradle/gradle-9.3.1/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin","NEXT_TELEMETRY_DISABLED":"1","CNB_USER_ID":"33","CNB_GROUP_ID":"33","AI_STUDIO_AGENT":"1","APP_DIR":"/app/applet","LANG":"en_US.UTF-8","DEBIAN_FRONTEND":"noninteractive","K_SERVICE":"ais-dev-byek27z27k3f4mepjz2tel","NODE_PATH":"/usr/local/lib/node_modules","GRADLE_VERSION":"9.3.1","NGINX_PORT":"8080","ANDROID_SDK_ROOT":"/opt/android/sdk","LC_ALL":"en_US.UTF-8","ANDROID_FRAMEWORK":"true","GRADLE_USER_HOME":"/opt/gradle/.gradle","PWD":"/app/applet","AUTHORIZED_SERVICE_ACCOUNT_EMAIL":"ais-sandbox@ais-us-east1-8dfd7f5990a343b09.iam.gserviceaccount.com","CSP_HEADER_VALUE":"frame-ancestors 'self' https://*.google.com https://localhost.corp.google.com:26001;","NODE_ENV":"development","CNB_STACK_ID":"google.gae.22","IS_FIREBASE_CLI":"true","FIREBASE_EMULATOR_HUB":"127.0.0.1:4400","FIRESTORE_EMULATOR_HOST":"127.0.0.1:8080","FIREBASE_FIRESTORE_EMULATOR_ADDRESS":"127.0.0.1:8080"}
+[debug] [2026-11-07T22:19:25.595Z] Nov 07, 2026 10:19:25 PM com.google.cloud.datastore.emulator.firestore.websocket.WebSocketServer start
+INFO: Started WebSocket server on ws://127.0.0.1:9150
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Nov 07, 2026 10:19:25 PM com.google.cloud.datastore.emulator.firestore.websocket.WebSocketServer start\nINFO: Started WebSocket server on ws://127.0.0.1:9150\n"}}
+[debug] [2026-11-07T22:19:25.636Z] 
+API endpoint: http://127.0.0.1:8080 {"metadata":{"emulator":{"name":"firestore"},"message":"\nAPI endpoint: http://127.0.0.1:8080"}}
+[debug] [2026-11-07T22:19:25.636Z] 
+Database Edition: STANDARD
+Database Mode: CLOUD_FIRESTORE
+
+If you are using a library that supports the FIRESTORE_EMULATOR_HOST environment variable, run:
+
+   export FIRESTORE_EMULATOR_HOST=127.0.0.1:8080
+
+If you are running a Firestore in Datastore Mode project, run:
+
+   export DATASTORE_EMULATOR_HOST=127.0.0.1:8080
+
+Note: Support for Datastore Mode is in preview. If you encounter any bugs please file at https://github.com/firebase/firebase-tools/issues.
+Dev App Server is now running.
+
+ {"metadata":{"emulator":{"name":"firestore"},"message":"\nDatabase Edition: STANDARD\nDatabase Mode: CLOUD_FIRESTORE\n\nIf you are using a library that supports the FIRESTORE_EMULATOR_HOST environment variable, run:\n\n   export FIRESTORE_EMULATOR_HOST=127.0.0.1:8080\n\nIf you are running a Firestore in Datastore Mode project, run:\n\n   export DATASTORE_EMULATOR_HOST=127.0.0.1:8080\n\nNote: Support for Datastore Mode is in preview. If you encounter any bugs please file at https://github.com/firebase/firebase-tools/issues.\nDev App Server is now running.\n\n"}}
+[debug] [2026-11-07T22:19:26.669Z] Nov 07, 2026 10:19:26 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected HTTP/2 connection.
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Nov 07, 2026 10:19:26 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\nINFO: Detected HTTP/2 connection.\n"}}
+[debug] [2026-11-07T22:19:26.806Z] Multiple projectIds are not recommended in single project mode. Requested project ID demo-test, but the emulator is configured for demo-no-project. To opt-out of single project mode add/set the '"singleProjectMode": false' property in the firebase.json emulators config.
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Multiple projectIds are not recommended in single project mode. Requested project ID demo-test, but the emulator is configured for demo-no-project. To opt-out of single project mode add/set the '\"singleProjectMode\": false' property in the firebase.json emulators config.\n"}}
+[debug] [2026-11-07T22:19:27.152Z] Multiple projectIds are not recommended in single project mode. Requested project ID demo-test, but the emulator is configured for demo-no-project. To opt-out of single project mode add/set the '"singleProjectMode": false' property in the firebase.json emulators config.
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Multiple projectIds are not recommended in single project mode. Requested project ID demo-test, but the emulator is configured for demo-no-project. To opt-out of single project mode add/set the '\"singleProjectMode\": false' property in the firebase.json emulators config.\n"}}
+[debug] [2026-11-07T22:19:27.354Z] Nov 07, 2026 10:19:27 PM com.google.cloud.datastore.emulator.impl.util.WrappedStreamObserver onError
+WARNING: Operation failed: Error compiling rules:
+L23:16 Missing 'match' keyword before path.
+L23:26 Forward slash '/' found where identifier or binding expected.
+L23:27 mismatched input '$' expecting {'{', '/', PATH_SEGMENT}
+L23:38 Missing 'match' keyword before path.
+L23:66 Unexpected '$'.
+L23:66 mismatched input '$' expecting {'{', '/', PATH_SEGMENT}
+L24:13 Missing 'match' keyword before path.
+L24:23 Forward slash '/' found where identifier or binding expected.
+L24:24 mismatched input '$' expecting {'{', '/', PATH_SEGMENT}
+L24:35 Missing 'match' keyword before path.
+L24:63 mismatched input '$' expecting {'{', '/', PATH_SEGMENT}
+L25:13 Missing 'match' keyword before path.
+L25:23 Forward slash '/' found where identifier or binding expected.
+L25:24 mismatched input '$' expecting {'{', '/', PATH_SEGMENT}
+L25:35 Missing 'match' keyword before path.
+L25:63 mismatched input '$' expecting {'{', '/', PATH_SEGMENT}
+L26:13 Missing 'match' keyword before path.
+L26:23 Forward slash '/' found where identifier or binding expected.
+L26:24 mismatched input '$' expecting {'{', '/', PATH_SEGMENT}
+L26:35 Missing 'match' keyword before path.
+L26:63 mismatched input '$' expecting {'{', '/', PATH_SEGMENT}
+L122:1 Unexpected '}'.
+com.google.cloud.datastore.core.exception.DatastoreException: Error compiling rules:
+L23:16 Missing 'match' keyword before path.
+L23:26 Forward slash '/' found where identifier or binding expected.
+L23:27 mismatched input '$' expecting {'{', '/', PATH_SEGMENT}
+L23:38 Missing 'match' keyword before path.
+L23:66 Unexpected '$'.
+L23:66 mismatched input '$' expecting {'{', '/', PATH_SEGMENT}
+L24:13 Missing 'match' keyword before path.
+L24:23 Forward slash '/' found where identifier or binding expected.
+L24:24 mismatched input '$' expecting {'{', '/', PATH_SEGMENT}
+L24:35 Missing 'match' keyword before path.
+L24:63 mismatched input '$' expecting {'{', '/', PATH_SEGMENT}
+L25:13 Missing 'match' keyword before path.
+L25:23 Forward slash '/' found where identifier or binding expected.
+L25:24 mismatched input '$' expecting {'{', '/', PATH_SEGMENT}
+L25:35 Missing 'match' keyword before path.
+L25:63 mismatched input '$' expecting {'{', '/', PATH_SEGMENT}
+L26:13 Missing 'match' keyword before path.
+L26:23 Forward slash '/' found where identifier or binding expected.
+L26:24 mismatched input '$' expecting {'{', '/', PATH_SEGMENT}
+L26:35 Missing 'match' keyword before path.
+L26:63 mismatched input '$' expecting {'{', '/', PATH_SEGMENT}
+L122:1 Unexpected '}'.
+	at com.google.cloud.datastore.emulator.impl.rules.EmulatorRulesCompiler$CompilerException.asDatastoreException(EmulatorRulesCompiler.java:120)
+	at com.google.cloud.datastore.emulator.impl.rules.EmulatorRulesCompiler$EmulatorCompilationResult.checkCompilationSucceeded(EmulatorRulesCompiler.java:79)
+	at com.google.cloud.datastore.emulator.impl.rules.EmulatorRulesCompiler$EmulatorCompilationResult.getAuthorizer(EmulatorRulesCompiler.java:72)
+	at com.google.cloud.datastore.emulator.impl.firestore.FirestoreEmulatorHelper.commitHelper(FirestoreEmulatorHelper.java:406)
+	at com.google.cloud.datastore.emulator.impl.firestore.FirestoreEmulatorHelper.internalCommit(FirestoreEmulatorHelper.java:348)
+	at com.google.cloud.datastore.emulator.impl.firestore.CloudFirestoreV1.internalCommit(CloudFirestoreV1.java:1336)
+	at com.google.cloud.datastore.emulator.impl.firestore.CloudFirestoreV1.write(CloudFirestoreV1.java:1321)
+	at com.google.cloud.datastore.emulator.impl.firestore.CloudFirestoreV1WriteStream.handleRequest(CloudFirestoreV1WriteStream.java:222)
+	at com.google.cloud.datastore.emulator.impl.firestore.CloudFirestoreV1WriteStream.write(CloudFirestoreV1WriteStream.java:144)
+	at com.google.cloud.datastore.emulator.impl.firestore.CloudFirestoreV1WriteStream.onNext(CloudFirestoreV1WriteStream.java:99)
+	at com.google.cloud.datastore.emulator.impl.firestore.CloudFirestoreV1WriteStream.onNext(CloudFirestoreV1WriteStream.java:27)
+	at io.grpc.stub.ServerCalls$StreamingServerCallHandler$StreamingServerCallListener.onMessage(ServerCalls.java:262)
+	at io.grpc.ForwardingServerCallListener.onMessage(ForwardingServerCallListener.java:33)
+	at io.grpc.Contexts$ContextualizedServerCallListener.onMessage(Contexts.java:76)
+	at io.grpc.ForwardingServerCallListener.onMessage(ForwardingServerCallListener.java:33)
+	at io.grpc.Contexts$ContextualizedServerCallListener.onMessage(Contexts.java:76)
+	at io.grpc.internal.ServerCallImpl$ServerStreamListenerImpl.messagesAvailableInternal(ServerCallImpl.java:334)
+	at io.grpc.internal.ServerCallImpl$ServerStreamListenerImpl.messagesAvailable(ServerCallImpl.java:319)
+	at io.grpc.internal.ServerImpl$JumpToApplicationThreadServerStreamListener$1MessagesAvailable.runInContext(ServerImpl.java:852)
+	at io.grpc.internal.ContextRunnable.run(ContextRunnable.java:37)
+	at io.grpc.internal.SerializingExecutor.run(SerializingExecutor.java:133)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+Caused by: com.google.cloud.datastore.emulator.impl.rules.AutoValue_EmulatorRulesCompiler_CompilerException
+	at com.google.cloud.datastore.emulator.impl.rules.EmulatorRulesCompiler$CompilerException.of(EmulatorRulesCompiler.java:106)
+	... 23 more
+
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Nov 07, 2026 10:19:27 PM com.google.cloud.datastore.emulator.impl.util.WrappedStreamObserver onError\nWARNING: Operation failed: Error compiling rules:\nL23:16 Missing 'match' keyword before path.\nL23:26 Forward slash '/' found where identifier or binding expected.\nL23:27 mismatched input '$' expecting {'{', '/', PATH_SEGMENT}\nL23:38 Missing 'match' keyword before path.\nL23:66 Unexpected '$'.\nL23:66 mismatched input '$' expecting {'{', '/', PATH_SEGMENT}\nL24:13 Missing 'match' keyword before path.\nL24:23 Forward slash '/' found where identifier or binding expected.\nL24:24 mismatched input '$' expecting {'{', '/', PATH_SEGMENT}\nL24:35 Missing 'match' keyword before path.\nL24:63 mismatched input '$' expecting {'{', '/', PATH_SEGMENT}\nL25:13 Missing 'match' keyword before path.\nL25:23 Forward slash '/' found where identifier or binding expected.\nL25:24 mismatched input '$' expecting {'{', '/', PATH_SEGMENT}\nL25:35 Missing 'match' keyword before path.\nL25:63 mismatched input '$' expecting {'{', '/', PATH_SEGMENT}\nL26:13 Missing 'match' keyword before path.\nL26:23 Forward slash '/' found where identifier or binding expected.\nL26:24 mismatched input '$' expecting {'{', '/', PATH_SEGMENT}\nL26:35 Missing 'match' keyword before path.\nL26:63 mismatched input '$' expecting {'{', '/', PATH_SEGMENT}\nL122:1 Unexpected '}'.\ncom.google.cloud.datastore.core.exception.DatastoreException: Error compiling rules:\nL23:16 Missing 'match' keyword before path.\nL23:26 Forward slash '/' found where identifier or binding expected.\nL23:27 mismatched input '$' expecting {'{', '/', PATH_SEGMENT}\nL23:38 Missing 'match' keyword before path.\nL23:66 Unexpected '$'.\nL23:66 mismatched input '$' expecting {'{', '/', PATH_SEGMENT}\nL24:13 Missing 'match' keyword before path.\nL24:23 Forward slash '/' found where identifier or binding expected.\nL24:24 mismatched input '$' expecting {'{', '/', PATH_SEGMENT}\nL24:35 Missing 'match' keyword before path.\nL24:63 mismatched input '$' expecting {'{', '/', PATH_SEGMENT}\nL25:13 Missing 'match' keyword before path.\nL25:23 Forward slash '/' found where identifier or binding expected.\nL25:24 mismatched input '$' expecting {'{', '/', PATH_SEGMENT}\nL25:35 Missing 'match' keyword before path.\nL25:63 mismatched input '$' expecting {'{', '/', PATH_SEGMENT}\nL26:13 Missing 'match' keyword before path.\nL26:23 Forward slash '/' found where identifier or binding expected.\nL26:24 mismatched input '$' expecting {'{', '/', PATH_SEGMENT}\nL26:35 Missing 'match' keyword before path.\nL26:63 mismatched input '$' expecting {'{', '/', PATH_SEGMENT}\nL122:1 Unexpected '}'.\n\tat com.google.cloud.datastore.emulator.impl.rules.EmulatorRulesCompiler$CompilerException.asDatastoreException(EmulatorRulesCompiler.java:120)\n\tat com.google.cloud.datastore.emulator.impl.rules.EmulatorRulesCompiler$EmulatorCompilationResult.checkCompilationSucceeded(EmulatorRulesCompiler.java:79)\n\tat com.google.cloud.datastore.emulator.impl.rules.EmulatorRulesCompiler$EmulatorCompilationResult.getAuthorizer(EmulatorRulesCompiler.java:72)\n\tat com.google.cloud.datastore.emulator.impl.firestore.FirestoreEmulatorHelper.commitHelper(FirestoreEmulatorHelper.java:406)\n\tat com.google.cloud.datastore.emulator.impl.firestore.FirestoreEmulatorHelper.internalCommit(FirestoreEmulatorHelper.java:348)\n\tat com.google.cloud.datastore.emulator.impl.firestore.CloudFirestoreV1.internalCommit(CloudFirestoreV1.java:1336)\n\tat com.google.cloud.datastore.emulator.impl.firestore.CloudFirestoreV1.write(CloudFirestoreV1.java:1321)\n\tat com.google.cloud.datastore.emulator.impl.firestore.CloudFirestoreV1WriteStream.handleRequest(CloudFirestoreV1WriteStream.java:222)\n\tat com.google.cloud.datastore.emulator.impl.firestore.CloudFirestoreV1WriteStream.write(CloudFirestoreV1WriteStream.java:144)\n\tat com.google.cloud.datastore.emulator.impl.firestore.CloudFirestoreV1WriteStream.onNext(CloudFirestoreV1WriteStream.java:99)\n\tat com.google.cloud.datastore.emulator.impl.firestore.CloudFirestoreV1WriteStream.onNext(CloudFirestoreV1WriteStream.java:27)\n\tat io.grpc.stub.ServerCalls$StreamingServerCallHandler$StreamingServerCallListener.onMessage(ServerCalls.java:262)\n\tat io.grpc.ForwardingServerCallListener.onMessage(ForwardingServerCallListener.java:33)\n\tat io.grpc.Contexts$ContextualizedServerCallListener.onMessage(Contexts.java:76)\n\tat io.grpc.ForwardingServerCallListener.onMessage(ForwardingServerCallListener.java:33)\n\tat io.grpc.Contexts$ContextualizedServerCallListener.onMessage(Contexts.java:76)\n\tat io.grpc.internal.ServerCallImpl$ServerStreamListenerImpl.messagesAvailableInternal(ServerCallImpl.java:334)\n\tat io.grpc.internal.ServerCallImpl$ServerStreamListenerImpl.messagesAvailable(ServerCallImpl.java:319)\n\tat io.grpc.internal.ServerImpl$JumpToApplicationThreadServerStreamListener$1MessagesAvailable.runInContext(ServerImpl.java:852)\n\tat io.grpc.internal.ContextRunnable.run(ContextRunnable.java:37)\n\tat io.grpc.internal.SerializingExecutor.run(SerializingExecutor.java:133)\n\tat java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)\n\tat java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)\n\tat java.base/java.lang.Thread.run(Thread.java:1583)\nCaused by: com.google.cloud.datastore.emulator.impl.rules.AutoValue_EmulatorRulesCompiler_CompilerException\n\tat com.google.cloud.datastore.emulator.impl.rules.EmulatorRulesCompiler$CompilerException.of(EmulatorRulesCompiler.java:106)\n\t... 23 more\n\n"}}
+[warn] ⚠  Script exited unsuccessfully (code 1) 
+[info] i  emulators: Shutting down emulators. {"metadata":{"emulator":{"name":"hub"},"message":"Shutting down emulators."}}
+[info] i  firestore: Stopping Firestore Emulator {"metadata":{"emulator":{"name":"firestore"},"message":"Stopping Firestore Emulator"}}
+[debug] [2026-11-07T22:19:27.886Z] *** shutting down gRPC server since JVM is shutting down
+ {"metadata":{"emulator":{"name":"firestore"},"message":"*** shutting down gRPC server since JVM is shutting down\n"}}
+[debug] [2026-11-07T22:19:27.889Z] *** server shut down
+ {"metadata":{"emulator":{"name":"firestore"},"message":"*** server shut down\n"}}
+[info] i  hub: Stopping emulator hub {"metadata":{"emulator":{"name":"hub"},"message":"Stopping emulator hub"}}
+[info] i  logging: Stopping Logging Emulator {"metadata":{"emulator":{"name":"logging"},"message":"Stopping Logging Emulator"}}
+[debug] [2026-11-07T22:19:28.222Z] Could not find VSCode notification endpoint: TypeError: fetch failed. If you are not running the Firebase SQL Connect VSCode extension, this is expected and not an issue.
+[error] 
+[error] Error: Script "node test-rules.js" exited with code 1

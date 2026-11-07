@@ -1,0 +1,99 @@
+Nov 07, 2026 10:19:25 PM com.google.cloud.datastore.emulator.firestore.websocket.WebSocketServer start
+INFO: Started WebSocket server on ws://127.0.0.1:9150
+
+API endpoint: http://127.0.0.1:8080
+Database Edition: STANDARD
+Database Mode: CLOUD_FIRESTORE
+
+If you are using a library that supports the FIRESTORE_EMULATOR_HOST environment variable, run:
+
+   export FIRESTORE_EMULATOR_HOST=127.0.0.1:8080
+
+If you are running a Firestore in Datastore Mode project, run:
+
+   export DATASTORE_EMULATOR_HOST=127.0.0.1:8080
+
+Note: Support for Datastore Mode is in preview. If you encounter any bugs please file at https://github.com/firebase/firebase-tools/issues.
+Dev App Server is now running.
+
+Nov 07, 2026 10:19:26 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected HTTP/2 connection.
+Multiple projectIds are not recommended in single project mode. Requested project ID demo-test, but the emulator is configured for demo-no-project. To opt-out of single project mode add/set the '"singleProjectMode": false' property in the firebase.json emulators config.
+Multiple projectIds are not recommended in single project mode. Requested project ID demo-test, but the emulator is configured for demo-no-project. To opt-out of single project mode add/set the '"singleProjectMode": false' property in the firebase.json emulators config.
+Nov 07, 2026 10:19:27 PM com.google.cloud.datastore.emulator.impl.util.WrappedStreamObserver onError
+WARNING: Operation failed: Error compiling rules:
+L23:16 Missing 'match' keyword before path.
+L23:26 Forward slash '/' found where identifier or binding expected.
+L23:27 mismatched input '$' expecting {'{', '/', PATH_SEGMENT}
+L23:38 Missing 'match' keyword before path.
+L23:66 Unexpected '$'.
+L23:66 mismatched input '$' expecting {'{', '/', PATH_SEGMENT}
+L24:13 Missing 'match' keyword before path.
+L24:23 Forward slash '/' found where identifier or binding expected.
+L24:24 mismatched input '$' expecting {'{', '/', PATH_SEGMENT}
+L24:35 Missing 'match' keyword before path.
+L24:63 mismatched input '$' expecting {'{', '/', PATH_SEGMENT}
+L25:13 Missing 'match' keyword before path.
+L25:23 Forward slash '/' found where identifier or binding expected.
+L25:24 mismatched input '$' expecting {'{', '/', PATH_SEGMENT}
+L25:35 Missing 'match' keyword before path.
+L25:63 mismatched input '$' expecting {'{', '/', PATH_SEGMENT}
+L26:13 Missing 'match' keyword before path.
+L26:23 Forward slash '/' found where identifier or binding expected.
+L26:24 mismatched input '$' expecting {'{', '/', PATH_SEGMENT}
+L26:35 Missing 'match' keyword before path.
+L26:63 mismatched input '$' expecting {'{', '/', PATH_SEGMENT}
+L122:1 Unexpected '}'.
+com.google.cloud.datastore.core.exception.DatastoreException: Error compiling rules:
+L23:16 Missing 'match' keyword before path.
+L23:26 Forward slash '/' found where identifier or binding expected.
+L23:27 mismatched input '$' expecting {'{', '/', PATH_SEGMENT}
+L23:38 Missing 'match' keyword before path.
+L23:66 Unexpected '$'.
+L23:66 mismatched input '$' expecting {'{', '/', PATH_SEGMENT}
+L24:13 Missing 'match' keyword before path.
+L24:23 Forward slash '/' found where identifier or binding expected.
+L24:24 mismatched input '$' expecting {'{', '/', PATH_SEGMENT}
+L24:35 Missing 'match' keyword before path.
+L24:63 mismatched input '$' expecting {'{', '/', PATH_SEGMENT}
+L25:13 Missing 'match' keyword before path.
+L25:23 Forward slash '/' found where identifier or binding expected.
+L25:24 mismatched input '$' expecting {'{', '/', PATH_SEGMENT}
+L25:35 Missing 'match' keyword before path.
+L25:63 mismatched input '$' expecting {'{', '/', PATH_SEGMENT}
+L26:13 Missing 'match' keyword before path.
+L26:23 Forward slash '/' found where identifier or binding expected.
+L26:24 mismatched input '$' expecting {'{', '/', PATH_SEGMENT}
+L26:35 Missing 'match' keyword before path.
+L26:63 mismatched input '$' expecting {'{', '/', PATH_SEGMENT}
+L122:1 Unexpected '}'.
+	at com.google.cloud.datastore.emulator.impl.rules.EmulatorRulesCompiler$CompilerException.asDatastoreException(EmulatorRulesCompiler.java:120)
+	at com.google.cloud.datastore.emulator.impl.rules.EmulatorRulesCompiler$EmulatorCompilationResult.checkCompilationSucceeded(EmulatorRulesCompiler.java:79)
+	at com.google.cloud.datastore.emulator.impl.rules.EmulatorRulesCompiler$EmulatorCompilationResult.getAuthorizer(EmulatorRulesCompiler.java:72)
+	at com.google.cloud.datastore.emulator.impl.firestore.FirestoreEmulatorHelper.commitHelper(FirestoreEmulatorHelper.java:406)
+	at com.google.cloud.datastore.emulator.impl.firestore.FirestoreEmulatorHelper.internalCommit(FirestoreEmulatorHelper.java:348)
+	at com.google.cloud.datastore.emulator.impl.firestore.CloudFirestoreV1.internalCommit(CloudFirestoreV1.java:1336)
+	at com.google.cloud.datastore.emulator.impl.firestore.CloudFirestoreV1.write(CloudFirestoreV1.java:1321)
+	at com.google.cloud.datastore.emulator.impl.firestore.CloudFirestoreV1WriteStream.handleRequest(CloudFirestoreV1WriteStream.java:222)
+	at com.google.cloud.datastore.emulator.impl.firestore.CloudFirestoreV1WriteStream.write(CloudFirestoreV1WriteStream.java:144)
+	at com.google.cloud.datastore.emulator.impl.firestore.CloudFirestoreV1WriteStream.onNext(CloudFirestoreV1WriteStream.java:99)
+	at com.google.cloud.datastore.emulator.impl.firestore.CloudFirestoreV1WriteStream.onNext(CloudFirestoreV1WriteStream.java:27)
+	at io.grpc.stub.ServerCalls$StreamingServerCallHandler$StreamingServerCallListener.onMessage(ServerCalls.java:262)
+	at io.grpc.ForwardingServerCallListener.onMessage(ForwardingServerCallListener.java:33)
+	at io.grpc.Contexts$ContextualizedServerCallListener.onMessage(Contexts.java:76)
+	at io.grpc.ForwardingServerCallListener.onMessage(ForwardingServerCallListener.java:33)
+	at io.grpc.Contexts$ContextualizedServerCallListener.onMessage(Contexts.java:76)
+	at io.grpc.internal.ServerCallImpl$ServerStreamListenerImpl.messagesAvailableInternal(ServerCallImpl.java:334)
+	at io.grpc.internal.ServerCallImpl$ServerStreamListenerImpl.messagesAvailable(ServerCallImpl.java:319)
+	at io.grpc.internal.ServerImpl$JumpToApplicationThreadServerStreamListener$1MessagesAvailable.runInContext(ServerImpl.java:852)
+	at io.grpc.internal.ContextRunnable.run(ContextRunnable.java:37)
+	at io.grpc.internal.SerializingExecutor.run(SerializingExecutor.java:133)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+Caused by: com.google.cloud.datastore.emulator.impl.rules.AutoValue_EmulatorRulesCompiler_CompilerException
+	at com.google.cloud.datastore.emulator.impl.rules.EmulatorRulesCompiler$CompilerException.of(EmulatorRulesCompiler.java:106)
+	... 23 more
+
+*** shutting down gRPC server since JVM is shutting down
+*** server shut down

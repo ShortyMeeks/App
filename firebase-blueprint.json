@@ -1,0 +1,82 @@
+{
+  "entities": {
+    "UserProfile": {
+      "collection": "users",
+      "fields": {
+        "id": { "type": "string" },
+        "fullName": { "type": "string" },
+        "email": { "type": "string" },
+        "studentId": { "type": "string" },
+        "role": { "type": "string" },
+        "isApproved": { "type": "boolean" },
+        "createdAt": { "type": "timestamp" },
+        "updatedAt": { "type": "timestamp" }
+      }
+    },
+    "StudentProfile": {
+      "collection": "studentProfiles",
+      "fields": {
+        "id": { "type": "string" },
+        "studentUid": { "type": "string" },
+        "fullName": { "type": "string" },
+        "studentNumber": { "type": "string" },
+        "program": { "type": "string" },
+        "semester": { "type": "string" },
+        "contactEmail": { "type": "string" },
+        "contactPhone": { "type": "string" },
+        "accommodations": { "type": "list" },
+        "communicationPreferences": { "type": "map" },
+        "classroomStrategies": { "type": "list" },
+        "emergencyInformation": { "type": "map" },
+        "sensitiveInformation": { "type": "map" },
+        "createdAt": { "type": "timestamp" },
+        "updatedAt": { "type": "timestamp" }
+      }
+    },
+    "ConsentGrant": {
+      "collection": "consents",
+      "fields": {
+        "id": { "type": "string" },
+        "studentUid": { "type": "string" },
+        "studentName": { "type": "string" },
+        "teacherUid": { "type": "string" },
+        "teacherName": { "type": "string" },
+        "courseId": { "type": "string" },
+        "courseName": { "type": "string" },
+        "academicTerm": { "type": "string" },
+        "shareAccommodations": { "type": "boolean" },
+        "shareCommunicationPrefs": { "type": "boolean" },
+        "shareEmergencyProtocol": { "type": "boolean" },
+        "shareClinicalDiagnosis": { "type": "boolean" },
+        "isRevoked": { "type": "boolean" },
+        "grantedAt": { "type": "timestamp" },
+        "expiresAt": { "type": "timestamp" }
+      }
+    },
+    "AuditLog": {
+      "collection": "auditLogs",
+      "fields": {
+        "id": { "type": "string" },
+        "actorUid": { "type": "string" },
+        "actorName": { "type": "string" },
+        "actorRole": { "type": "string" },
+        "courseName": { "type": "string" },
+        "actionType": { "type": "string" },
+        "details": { "type": "string" },
+        "timestamp": { "type": "timestamp" }
+      }
+    },
+    "Course": {
+      "collection": "courses",
+      "fields": {
+        "id": { "type": "string" },
+        "code": { "type": "string" },
+        "name": { "type": "string" },
+        "teacherId": { "type": "string" },
+        "teacherName": { "type": "string" },
+        "schedule": { "type": "string" },
+        "semester": { "type": "string" }
+      }
+    }
+  }
+}

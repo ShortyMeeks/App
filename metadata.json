@@ -1,0 +1,6 @@
+{
+  "name": "Perfil de Apoyos Estudiantiles",
+  "description": "Sistema de gestión y compartición segura de perfiles de apoyos y ajustes razonables en aula para universidades mexicanas.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
