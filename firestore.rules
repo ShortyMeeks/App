@@ -71,7 +71,8 @@ service cloud.firestore {
 
     // Student root document contains only ordinary academic/profile information.
     match /students/{studentUid} {
-      allow get: if isOwner(studentUid) || hasAnyConsent(studentUid);
+      // Teachers must read only the exact shared/private document they were authorized for.
+      allow get: if isOwner(studentUid);
       allow list: if false;
       allow create, update: if isStudent(studentUid);
       allow delete: if false;
