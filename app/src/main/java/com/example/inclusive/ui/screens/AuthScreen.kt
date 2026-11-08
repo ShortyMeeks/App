@@ -87,9 +87,9 @@ fun AuthScreen(
 ) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
-    var selectedTab by remember { mutableIntStateOf(0) } // 0 = Iniciar Sesión, 1 = Crear Cuenta
+    var selectedTab by remember { mutableIntStateOf(0) } // 0 = Log In, 1 = Register
 
-    // Campos del formulario
+    // Form fields
     var fullName by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -101,6 +101,7 @@ fun AuthScreen(
     var isLoading by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
     var showForgotPasswordDialog by remember { mutableStateOf(false) }
+    var resetEmailSentMessage by remember { mutableStateOf<String?>(null) }
 
     Column(
         modifier = Modifier
@@ -113,7 +114,7 @@ fun AuthScreen(
     ) {
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Logotipo y encabezado institucional
+        // App Logo & Header
         Box(
             modifier = Modifier
                 .size(76.dp)
@@ -123,7 +124,7 @@ fun AuthScreen(
         ) {
             Image(
                 painter = painterResource(id = R.drawable.ic_launcher_fg_1794086304377),
-                contentDescription = "Logotipo Institucional",
+                contentDescription = "App Logo",
                 modifier = Modifier.size(60.dp)
             )
         }
@@ -153,7 +154,7 @@ fun AuthScreen(
             modifier = Modifier.fillMaxWidth()
         ) {
             Column(modifier = Modifier.padding(20.dp)) {
-                // Pestañas Iniciar Sesión / Crear Cuenta
+                // Tab Selection
                 TabRow(
                     selectedTabIndex = selectedTab,
                     containerColor = MaterialTheme.colorScheme.surface
@@ -179,7 +180,7 @@ fun AuthScreen(
                 Spacer(modifier = Modifier.height(20.dp))
 
                 if (selectedTab == 1) {
-                    // Formulario de Registro
+                    // Registration Form
                     OutlinedTextField(
                         value = fullName,
                         onValueChange = { fullName = it },
@@ -201,7 +202,7 @@ fun AuthScreen(
                     Spacer(modifier = Modifier.height(12.dp))
                 }
 
-                // Campo Correo Electrónico
+                // Email Field
                 OutlinedTextField(
                     value = email,
                     onValueChange = { email = it },
@@ -214,7 +215,7 @@ fun AuthScreen(
 
                 Spacer(modifier = Modifier.height(12.dp))
 
-                // Campo Contraseña
+                // Password Field
                 OutlinedTextField(
                     value = password,
                     onValueChange = { password = it },
@@ -256,7 +257,7 @@ fun AuthScreen(
                         )
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(
-                            text = "Acepto el Aviso de Privacidad y el tratamiento de datos personales sensibles (LFPDPPP).",
+                            text = "Acepto el Aviso de Privacidad y tratamiento de datos personales sensibles (LFPDPPP).",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -291,13 +292,13 @@ fun AuthScreen(
                     }
                 }
 
-                // Botón Principal de Envío
+                // Submit Button
                 Button(
                     onClick = {
                         errorMessage = null
                         if (selectedTab == 0) {
                             if (email.isBlank() || password.isBlank()) {
-                                errorMessage = "Por favor ingrese su correo y contraseña."
+                                errorMessage = "Por favor ingrese correo y contraseña."
                                 return@Button
                             }
                             isLoading = true
@@ -305,10 +306,9 @@ fun AuthScreen(
                                 val result = viewModel.firebaseService.loginWithEmail(email, password)
                                 isLoading = false
                                 result.onSuccess { role ->
-                                    viewModel.switchRole(role)
                                     onAuthSuccess(role)
                                 }.onFailure { err ->
-                                    errorMessage = "Error al iniciar sesión: ${err.localizedMessage ?: "Credenciales no válidas"}. También puede acceder mediante Google abajo."
+                                    errorMessage = "Error al iniciar sesión: ${err.localizedMessage ?: "Credenciales inválidas"}. También puede usar Google abajo."
                                 }
                             }
                         } else {
@@ -321,11 +321,11 @@ fun AuthScreen(
                                 return@Button
                             }
                             if (password.length < 6) {
-                                errorMessage = "La contraseña debe contener al menos 6 caracteres."
+                                errorMessage = "La contraseña debe tener al menos 6 caracteres."
                                 return@Button
                             }
                             if (!privacyAccepted) {
-                                errorMessage = "Debe aceptar el Aviso de Privacidad para continuar."
+                                errorMessage = "Debe aceptar el aviso de privacidad para continuar."
                                 return@Button
                             }
                             isLoading = true
@@ -338,10 +338,9 @@ fun AuthScreen(
                                 )
                                 isLoading = false
                                 result.onSuccess {
-                                    viewModel.switchRole(UserRole.STUDENT)
                                     onAuthSuccess(UserRole.STUDENT)
                                 }.onFailure { err ->
-                                    errorMessage = "Error en el registro: ${err.localizedMessage}. También puede acceder mediante Google abajo."
+                                    errorMessage = "Error en el registro: ${err.localizedMessage}. Si el proveedor de correo está deshabilitado, use Google abajo."
                                 }
                             }
                         }
@@ -375,7 +374,7 @@ fun AuthScreen(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Acceso interactivo con Google
+                // Interactive 1-Tap Google Sign-In Button
                 OutlinedButton(
                     onClick = {
                         isLoading = true
@@ -401,18 +400,17 @@ fun AuthScreen(
                                     val authCredential = GoogleAuthProvider.getCredential(googleIdToken, null)
                                     FirebaseAuth.getInstance().signInWithCredential(authCredential).await()
                                     val role = viewModel.firebaseService.getUserRole()
-                                    viewModel.switchRole(role)
                                     isLoading = false
                                     onAuthSuccess(role)
                                 } else {
                                     isLoading = false
-                                    errorMessage = "Formato de credencial no esperado."
+                                    errorMessage = "Formato de credencial inesperado."
                                 }
                             } catch (e: GetCredentialCancellationException) {
                                 isLoading = false
                             } catch (e: Exception) {
                                 isLoading = false
-                                errorMessage = "Acceso con Google: ${e.localizedMessage}"
+                                errorMessage = "Google Sign-In: ${e.localizedMessage}"
                             }
                         }
                     },
@@ -439,7 +437,7 @@ fun AuthScreen(
             Text("Consultar Derechos ARCO y Aviso de Privacidad (LFPDPPP)")
         }
 
-        // Diálogo para restablecer contraseña
+        // Forgot password dialog
         if (showForgotPasswordDialog) {
             var resetEmail by remember { mutableStateOf(email) }
             var isResetting by remember { mutableStateOf(false) }
@@ -448,7 +446,7 @@ fun AuthScreen(
                 title = { Text("Restablecer Contraseña") },
                 text = {
                     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Text("Ingrese su correo electrónico para enviarle las instrucciones de restablecimiento de contraseña:")
+                        Text("Ingrese su correo para recibir instrucciones de restablecimiento.")
                         OutlinedTextField(
                             value = resetEmail,
                             onValueChange = { resetEmail = it },
@@ -468,9 +466,9 @@ fun AuthScreen(
                                     isResetting = false
                                     showForgotPasswordDialog = false
                                     res.onSuccess {
-                                        viewModel.setSnackbarMessage("Se ha enviado el enlace de restablecimiento a $resetEmail.")
+                                        viewModel.setSnackbarMessage("Correo de restablecimiento enviado a $resetEmail.")
                                     }.onFailure {
-                                        errorMessage = "No fue posible enviar el correo: ${it.localizedMessage}"
+                                        errorMessage = "Error al enviar correo: ${it.localizedMessage}"
                                     }
                                 }
                             }

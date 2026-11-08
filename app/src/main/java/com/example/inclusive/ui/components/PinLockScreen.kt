@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -33,13 +32,18 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.inclusive.viewmodel.InclusiveViewModel
 
 @Composable
 fun PinLockScreen(
+    viewModel: InclusiveViewModel,
     onUnlocked: () -> Unit
 ) {
     var enteredPin by remember { mutableStateOf("") }
     var errorMessage by remember { mutableStateOf<String?>(null) }
+
+    // Verificamos si el usuario ya tiene un PIN guardado
+    val isCreatingPin = !viewModel.hasPinConfigured()
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -70,7 +74,7 @@ fun PinLockScreen(
             Spacer(modifier = Modifier.height(24.dp))
 
             Text(
-                text = "Perfil de Apoyos Protegido",
+                text = if (isCreatingPin) "Configurar PIN de Seguridad" else "Perfil de Apoyos Protegido",
                 style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
                 textAlign = TextAlign.Center
             )
@@ -78,7 +82,10 @@ fun PinLockScreen(
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = "Ingrese su PIN de seguridad de 4 dígitos o use biometría para acceder a sus ajustes de inclusión y consentimientos.",
+                text = if (isCreatingPin)
+                    "Cree un PIN de 4 dígitos para proteger sus datos clínicos y consentimientos en caso de pérdida del dispositivo."
+                else
+                    "Ingrese su PIN de seguridad de 4 dígitos para acceder a sus ajustes de inclusión.",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center
@@ -136,22 +143,25 @@ fun PinLockScreen(
                         for (key in row) {
                             when (key) {
                                 "BIO" -> {
-                                    Box(
-                                        modifier = Modifier
-                                            .size(68.dp)
-                                            .clip(CircleShape)
-                                            .background(MaterialTheme.colorScheme.secondaryContainer)
-                                            .clickable {
-                                                onUnlocked()
-                                            },
-                                        contentAlignment = Alignment.Center
-                                    ) {
-                                        Icon(
-                                            imageVector = Icons.Default.Fingerprint,
-                                            contentDescription = "Autenticación Biométrica",
-                                            tint = MaterialTheme.colorScheme.onSecondaryContainer,
-                                            modifier = Modifier.size(28.dp)
-                                        )
+                                    // Si está creando PIN, no mostramos biometría aún
+                                    if (!isCreatingPin) {
+                                        Box(
+                                            modifier = Modifier
+                                                .size(68.dp)
+                                                .clip(CircleShape)
+                                                .background(MaterialTheme.colorScheme.secondaryContainer)
+                                                .clickable { onUnlocked() },
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            Icon(
+                                                imageVector = Icons.Default.Fingerprint,
+                                                contentDescription = "Autenticación Biométrica",
+                                                tint = MaterialTheme.colorScheme.onSecondaryContainer,
+                                                modifier = Modifier.size(28.dp)
+                                            )
+                                        }
+                                    } else {
+                                        Spacer(modifier = Modifier.size(68.dp))
                                     }
                                 }
                                 "DEL" -> {
@@ -187,12 +197,20 @@ fun PinLockScreen(
                                                     val newPin = enteredPin + key
                                                     enteredPin = newPin
                                                     errorMessage = null
+
                                                     if (newPin.length == 4) {
-                                                        if (newPin == "1234") {
+                                                        if (isCreatingPin) {
+                                                            // Guardar el nuevo PIN
+                                                            viewModel.saveNewPin(newPin)
                                                             onUnlocked()
                                                         } else {
-                                                            errorMessage = "PIN incorrecto. El PIN predeterminado es 1234."
-                                                            enteredPin = ""
+                                                            // Validar PIN existente
+                                                            if (viewModel.unlockWithPin(newPin)) {
+                                                                onUnlocked()
+                                                            } else {
+                                                                errorMessage = "PIN incorrecto. Intente de nuevo."
+                                                                enteredPin = ""
+                                                            }
                                                         }
                                                     }
                                                 }
@@ -214,11 +232,14 @@ fun PinLockScreen(
 
             Spacer(modifier = Modifier.height(20.dp))
 
-            Text(
-                text = "Clave de acceso: 1234 o toque el ícono de huella",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
+            if (isCreatingPin) {
+                Text(
+                    text = "Al terminar, el PIN se guardará de forma segura en este dispositivo.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    textAlign = TextAlign.Center
+                )
+            }
         }
     }
 }

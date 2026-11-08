@@ -8,6 +8,11 @@ import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -16,7 +21,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Logout
-import androidx.compose.material.icons.filled.School
 import androidx.compose.material.icons.filled.Security
 import androidx.compose.material.icons.filled.Shield
 import androidx.compose.material.icons.filled.VisibilityOff
@@ -24,9 +28,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -91,42 +92,28 @@ class MainActivity : ComponentActivity() {
                     }
                 }
 
-                // Bloqueo por PIN de seguridad
                 if (isLocked) {
-                    PinLockScreen(
-                        onUnlocked = { viewModel.toggleLock() }
-                    )
+                    PinLockScreen(viewModel = viewModel, onUnlocked = { viewModel.toggleLock() })
                     return@MyApplicationTheme
                 }
 
-                // Modo Discreto (Camuflaje de privacidad para aulas y bibliotecas)
                 if (isDiscreetMode) {
-                    DiscreetDisguiseScreen(
-                        onExitDiscreetMode = { viewModel.toggleDiscreetMode() }
-                    )
+                    DiscreetDisguiseScreen(onExitDiscreetMode = { viewModel.toggleDiscreetMode() })
                     return@MyApplicationTheme
                 }
 
-                // Pantalla de Autenticación si no hay sesión activa
                 if (!isAuthenticated) {
                     AuthScreen(
                         viewModel = viewModel,
-                        onAuthSuccess = { role ->
-                            viewModel.setAuthenticated(true, role)
-                        },
-                        onShowPrivacyNotice = {
-                            showPrivacyNoticeDialog = true
-                        }
+                        onAuthSuccess = { role -> viewModel.setAuthenticated(true, role) },
+                        onShowPrivacyNotice = { showPrivacyNoticeDialog = true }
                     )
                     if (showPrivacyNoticeDialog) {
-                        PrivacyNoticeDialog(
-                            onDismiss = { showPrivacyNoticeDialog = false }
-                        )
+                        PrivacyNoticeDialog(onDismiss = { showPrivacyNoticeDialog = false })
                     }
                     return@MyApplicationTheme
                 }
 
-                // Formulario de Creación / Edición del Perfil de Apoyos
                 if (isProfileEditorVisible) {
                     ProfileEditorScreen(
                         viewModel = viewModel,
@@ -141,130 +128,67 @@ class MainActivity : ComponentActivity() {
                     snackbarHost = { SnackbarHost(snackbarHostState) },
                     topBar = {
                         TopAppBar(
+                            modifier = Modifier.windowInsetsPadding(WindowInsets.statusBars), // <-- Ajuste para la cámara
                             title = {
                                 Column {
-                                    Row(verticalAlignment = Alignment.CenterVertically) {
-                                        Text(
-                                            text = "Perfil de Apoyos Estudiantiles",
-                                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
-                                        )
-                                        Spacer(modifier = Modifier.width(6.dp))
-                                        Surface(
-                                            color = MaterialTheme.colorScheme.primaryContainer,
-                                            shape = RoundedCornerShape(8.dp)
-                                        ) {
-                                            Text(
-                                                text = currentRole.label,
-                                                style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-                                                color = MaterialTheme.colorScheme.onPrimaryContainer,
-                                                modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
-                                            )
-                                        }
-                                    }
                                     Text(
-                                        text = "Inclusión en Aula y Consentimiento Granular",
-                                        style = MaterialTheme.typography.bodySmall,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                        fontSize = 11.sp
+                                        text = "Perfil de Apoyos",
+                                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
+                                    )
+                                    Text(
+                                        text = currentRole.label,
+                                        style = MaterialTheme.typography.labelSmall,
+                                        color = MaterialTheme.colorScheme.primary
                                     )
                                 }
                             },
                             actions = {
-                                // Botón de Modo Discreto (Escudo de Privacidad)
-                                IconButton(
-                                    onClick = { viewModel.toggleDiscreetMode() },
-                                    modifier = Modifier.testTag("discreet_mode_button")
+                                // Botones con espacio reducido y tamaños controlados
+                                Row(
+                                    modifier = Modifier.padding(end = 4.dp),
+                                    horizontalArrangement = Arrangement.spacedBy(0.dp)
                                 ) {
-                                    Icon(
-                                        imageVector = Icons.Default.VisibilityOff,
-                                        contentDescription = "Activar Modo Discreto",
-                                        tint = Color(0xFF0F766E)
-                                    )
-                                }
-
-                                // Botón de Bloqueo por PIN
-                                IconButton(
-                                    onClick = { viewModel.toggleLock() },
-                                    modifier = Modifier.testTag("lock_app_button")
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Default.Lock,
-                                        contentDescription = "Bloquear Aplicación",
-                                        tint = MaterialTheme.colorScheme.onSurfaceVariant
-                                    )
-                                }
-
-                                // Aviso Legal de Privacidad LFPDPPP
-                                IconButton(
-                                    onClick = { showPrivacyNoticeDialog = true },
-                                    modifier = Modifier.testTag("privacy_notice_button")
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Default.Shield,
-                                        contentDescription = "Aviso de Privacidad LFPDPPP",
-                                        tint = MaterialTheme.colorScheme.primary
-                                    )
-                                }
-
-                                // Cerrar Sesión
-                                IconButton(
-                                    onClick = { viewModel.signOut() },
-                                    modifier = Modifier.testTag("logout_button")
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Default.Logout,
-                                        contentDescription = "Cerrar Sesión",
-                                        tint = MaterialTheme.colorScheme.error
-                                    )
+                                    IconButton(onClick = { viewModel.toggleDiscreetMode() }) {
+                                        Icon(
+                                            imageVector = Icons.Default.VisibilityOff,
+                                            contentDescription = "Modo Discreto",
+                                            tint = Color(0xFF0F766E),
+                                            modifier = Modifier.size(22.dp) // Tamaño controlado
+                                        )
+                                    }
+                                    IconButton(onClick = { viewModel.toggleLock() }) {
+                                        Icon(
+                                            imageVector = Icons.Default.Lock,
+                                            contentDescription = "Bloquear",
+                                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                            modifier = Modifier.size(22.dp)
+                                        )
+                                    }
+                                    IconButton(onClick = { showPrivacyNoticeDialog = true }) {
+                                        Icon(
+                                            imageVector = Icons.Default.Shield,
+                                            contentDescription = "Privacidad",
+                                            tint = MaterialTheme.colorScheme.primary,
+                                            modifier = Modifier.size(22.dp)
+                                        )
+                                    }
+                                    IconButton(onClick = { viewModel.signOut() }) {
+                                        Icon(
+                                            imageVector = Icons.Default.Logout,
+                                            contentDescription = "Cerrar Sesión",
+                                            tint = MaterialTheme.colorScheme.error,
+                                            modifier = Modifier.size(22.dp)
+                                        )
+                                    }
                                 }
                             },
                             colors = TopAppBarDefaults.topAppBarColors(
                                 containerColor = MaterialTheme.colorScheme.surface
                             )
                         )
-                    },
-                    bottomBar = {
-                        NavigationBar(
-                            containerColor = MaterialTheme.colorScheme.surface,
-                            tonalElevation = 6.dp
-                        ) {
-                            NavigationBarItem(
-                                selected = currentRole == UserRole.STUDENT,
-                                onClick = { viewModel.switchRole(UserRole.STUDENT) },
-                                icon = {
-                                    Icon(
-                                        imageVector = Icons.Default.School,
-                                        contentDescription = "Panel Estudiante"
-                                    )
-                                },
-                                label = { Text("Estudiante") },
-                                colors = NavigationBarItemDefaults.colors(
-                                    indicatorColor = MaterialTheme.colorScheme.primaryContainer
-                                ),
-                                modifier = Modifier.testTag("nav_student_role")
-                            )
-
-                            NavigationBarItem(
-                                selected = currentRole == UserRole.TEACHER,
-                                onClick = { viewModel.switchRole(UserRole.TEACHER) },
-                                icon = {
-                                    Icon(
-                                        imageVector = Icons.Default.Security,
-                                        contentDescription = "Panel Docente"
-                                    )
-                                },
-                                label = { Text("Docente") },
-                                colors = NavigationBarItemDefaults.colors(
-                                    indicatorColor = MaterialTheme.colorScheme.primaryContainer
-                                ),
-                                modifier = Modifier.testTag("nav_teacher_role")
-                            )
-
-                            // TODO v2: Agregar NavigationBarItem para Orientación y Psicología (Counseling)
-                            // TODO v2: Agregar NavigationBarItem para Administración y Auditoría Institucional
-                        }
                     }
                 ) { paddingValues ->
+                    // Aquí aplicamos el padding para que la lista no se meta debajo de la cámara ni de los botones
                     Box(
                         modifier = Modifier
                             .fillMaxSize()
@@ -278,8 +202,7 @@ class MainActivity : ComponentActivity() {
                                     courses = courses,
                                     consents = consents,
                                     onOpenProfileEditor = { isProfileEditorVisible = true },
-                                    onShowPrivacyNotice = { showPrivacyNoticeDialog = true },
-                                    onLogout = { viewModel.signOut() }
+                                    onShowPrivacyNotice = { showPrivacyNoticeDialog = true }
                                 )
                             }
                             UserRole.TEACHER -> {
@@ -291,17 +214,12 @@ class MainActivity : ComponentActivity() {
                                     selectedCourseId = selectedCourseId
                                 )
                             }
-                            // TODO v2:
-                            // UserRole.COUNSELING -> CounselingScreen(viewModel, studentProfile)
-                            // UserRole.ADMIN -> AdminAuditScreen(viewModel, auditLogs, consents, courses, onLogout = { viewModel.signOut() })
                         }
                     }
                 }
 
                 if (showPrivacyNoticeDialog) {
-                    PrivacyNoticeDialog(
-                        onDismiss = { showPrivacyNoticeDialog = false }
-                    )
+                    PrivacyNoticeDialog(onDismiss = { showPrivacyNoticeDialog = false })
                 }
             }
         }
