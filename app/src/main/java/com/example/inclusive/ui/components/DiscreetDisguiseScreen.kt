@@ -1,6 +1,7 @@
 package com.example.inclusive.ui.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,17 +18,20 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.MenuBook
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material.icons.filled.ArrowBackIosNew
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -39,168 +43,138 @@ import androidx.compose.ui.unit.sp
 fun DiscreetDisguiseScreen(
     onExitDiscreetMode: () -> Unit
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color(0xFFF8F9FA))
-            .verticalScroll(rememberScrollState())
-            .padding(16.dp)
+    var noteTitle by remember { mutableStateOf("Apuntes de Clase") }
+    var noteContent by remember { mutableStateOf("Semestre 2026-2 • Notas de estudio\n\nRepaso de conceptos clave:\nLectura de capítulos 3 y 4. Preparación para la sesión de dudas.\n\nEjercicios prácticos:\nResolver la guía de problemas asignada en la plataforma.\n\nLecturas recomendadas:\nRevisar el material bibliográfico en la carpeta compartida.") }
+
+    var editingField by remember { mutableStateOf<String?>(null) }
+
+    // Fondo ligeramente grisáceo
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+        color = Color(0xFFF3F5F9)
     ) {
-        // Encabezado que parece una App de Notas
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp)
         ) {
-            Column {
-                Text(
-                    text = "Apuntes de Clase",
-                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
-                    color = Color(0xFF1F2937)
-                )
-                Text(
-                    text = "Semestre 2024-2",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = Color(0xFF6B7280)
-                )
-            }
-            // Botón para salir del camuflaje
-            Button(
-                onClick = onExitDiscreetMode,
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFFE5E7EB),
-                    contentColor = Color(0xFF374151)
-                ),
-                shape = RoundedCornerShape(8.dp),
-                contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 12.dp, vertical = 6.dp)
+
+            // --- BARRA SUPERIOR (Solo botón de regreso y título) ---
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 16.dp, bottom = 24.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Text("Salir", fontSize = 12.sp)
-            }
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Banner de privacidad
-        Surface(
-            color = Color(0xFFDBEAFE),
-            shape = RoundedCornerShape(8.dp),
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Row(modifier = Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    imageVector = Icons.Default.MenuBook,
-                    contentDescription = null,
-                    tint = Color(0xFF2563EB),
-                    modifier = Modifier.size(20.dp)
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    text = "Modo Discreto Activo. Su perfil de apoyos está oculto.",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = Color(0xFF1E3A8A)
-                )
-            }
-        }
-
-        Spacer(modifier = Modifier.height(20.dp))
-
-        // Título de la sección
-        Text(
-            text = "Resumen de Temas Recientes",
-            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-            color = Color(0xFF374151)
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        // Tarjetas de apuntes genéricas
-        NoteCard(
-            number = "1",
-            title = "Repaso de conceptos clave",
-            description = "Lectura de capítulos 3 y 4. Preparación para la sesión de dudas."
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-        NoteCard(
-            number = "2",
-            title = "Ejercicios prácticos",
-            description = "Resolver la guía de problemas asignada en la plataforma."
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-        NoteCard(
-            number = "3",
-            title = "Lecturas recomendadas",
-            description = "Revisar el material bibliográfico en la carpeta compartida."
-        )
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        // Sección de bibliografía
-        Card(
-            colors = CardDefaults.cardColors(containerColor = Color.White),
-            shape = RoundedCornerShape(12.dp),
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Column(modifier = Modifier.padding(16.dp)) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
+                // Botón regresar (Círculo blanco)
+                Box(
+                    modifier = Modifier
+                        .size(44.dp)
+                        .background(Color.White, CircleShape)
+                        .clickable { onExitDiscreetMode() },
+                    contentAlignment = Alignment.Center
+                ) {
                     Icon(
-                        imageVector = Icons.Default.MenuBook,
-                        contentDescription = null,
-                        tint = Color(0xFF4B5563),
+                        imageVector = Icons.Default.ArrowBackIosNew,
+                        contentDescription = "Regresar",
+                        tint = Color(0xFF1F2937),
                         modifier = Modifier.size(20.dp)
                     )
-                    Spacer(modifier = Modifier.width(8.dp))
+                }
+
+                // Título central
+                Text(
+                    text = "Apuntes",
+                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.SemiBold),
+                    color = Color(0xFF1F2937),
+                    modifier = Modifier.weight(1f),
+                    textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                )
+
+                // Espacio vacío del mismo tamaño que el botón para que el título quede centrado
+                Spacer(modifier = Modifier.width(44.dp))
+            }
+
+            // --- CONTENIDO (Caja Blanca Grande) ---
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.White, RoundedCornerShape(24.dp))
+                    .padding(24.dp)
+                    .verticalScroll(rememberScrollState())
+            ) {
+
+                // Título de la nota
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { editingField = "title" },
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     Text(
-                        text = "Bibliografía Sugerida",
-                        style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
-                        color = Color(0xFF1F2937)
+                        text = noteTitle,
+                        style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
+                        color = Color(0xFF1F2937),
+                        modifier = Modifier.weight(1f)
+                    )
+                    Icon(
+                        imageVector = Icons.Default.Edit,
+                        contentDescription = "Editar título",
+                        tint = Color(0xFF9CA3AF),
+                        modifier = Modifier.size(20.dp)
                     )
                 }
-                Spacer(modifier = Modifier.height(8.dp))
-                HorizontalDivider(color = Color(0xFFE5E7EB))
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = "• Notas del curso y presentaciones.\n• Guía de estudio proporcionada por el docente.",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = Color(0xFF4B5563)
-                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Caja de texto principal
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(Color(0xFFF3F5F9), RoundedCornerShape(16.dp))
+                        .clickable { editingField = "content" }
+                        .padding(16.dp)
+                ) {
+                    Text(
+                        text = noteContent,
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = Color(0xFF4B5563),
+                        lineHeight = 24.sp
+                    )
+                }
             }
         }
     }
-}
 
-@Composable
-fun NoteCard(number: String, title: String, description: String) {
-    Card(
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        shape = RoundedCornerShape(12.dp),
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Row(
-            modifier = Modifier.padding(16.dp),
-            verticalAlignment = Alignment.Top
-        ) {
-            Box(
-                modifier = Modifier
-                    .size(28.dp)
-                    .background(Color(0xFFF3F4F6), CircleShape),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(text = number, fontWeight = FontWeight.Bold, color = Color(0xFF6B7280))
-            }
-            Spacer(modifier = Modifier.width(12.dp))
-            Column {
-                Text(
-                    text = title,
-                    style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold),
-                    color = Color(0xFF1F2937)
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = description,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = Color(0xFF6B7280)
-                )
-            }
+    // Diálogo para editar el texto
+    if (editingField != null) {
+        var tempText by remember {
+            mutableStateOf(
+                if (editingField == "title") noteTitle else noteContent
+            )
         }
+
+        AlertDialog(
+            onDismissRequest = { editingField = null },
+            title = { Text(if (editingField == "title") "Editar Título" else "Editar Nota") },
+            text = {
+                OutlinedTextField(
+                    value = tempText,
+                    onValueChange = { tempText = it },
+                    modifier = Modifier.fillMaxWidth(),
+                    minLines = if (editingField == "title") 1 else 8,
+                    shape = RoundedCornerShape(12.dp)
+                )
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    if (editingField == "title") noteTitle = tempText else noteContent = tempText
+                    editingField = null
+                }) { Text("Guardar") }
+            },
+            dismissButton = {
+                TextButton(onClick = { editingField = null }) { Text("Cancelar") }
+            }
+        )
     }
 }

@@ -242,56 +242,60 @@ fun StudentHomeScreen(
                 modifier = Modifier.border(1.dp, Color(0xFFBBF7D0), RoundedCornerShape(16.dp))
             ) {
                 Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+
+                    // Fila 1: Título y Etiqueta de Privado (uno debajo del otro)
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(
-                                imageVector = Icons.Default.Security,
-                                contentDescription = null,
-                                tint = Color(0xFF16A34A),
-                                modifier = Modifier.size(20.dp)
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text(
-                                text = "Registro Confidencial y Privacidad",
-                                style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
-                                color = Color(0xFF14532D)
-                            )
-                        }
+                        Icon(
+                            imageVector = Icons.Default.Security,
+                            contentDescription = null,
+                            tint = Color(0xFF16A34A),
+                            modifier = Modifier.size(20.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = "Registro Confidencial",
+                            style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
+                            color = Color(0xFF14532D),
+                            modifier = Modifier.weight(1f) // Toma el espacio que sobra
+                        )
+
+                        // Etiqueta compacta
                         Surface(
                             color = Color(0xFFFEF3C7),
                             shape = RoundedCornerShape(8.dp)
                         ) {
                             Row(
-                                modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                                modifier = Modifier.padding(horizontal = 6.dp, vertical = 4.dp),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.VisibilityOff,
-                                    contentDescription = null,
+                                    contentDescription = "Reservado a Docentes",
                                     tint = Color(0xFFD97706),
-                                    modifier = Modifier.size(12.dp)
+                                    modifier = Modifier.size(14.dp)
                                 )
                                 Spacer(modifier = Modifier.width(4.dp))
                                 Text(
-                                    text = "Reservado a Docentes",
-                                    fontSize = 11.sp,
+                                    text = "Privado",
+                                    fontSize = 10.sp,
                                     color = Color(0xFF92400E),
-                                    fontWeight = FontWeight.SemiBold
+                                    fontWeight = FontWeight.Bold
                                 )
                             }
                         }
                     }
 
+                    // Fila 2: Condición
                     Text(
                         text = "Condición autodeclarada: ${profile.clinicalDetails?.conditionName ?: "Ninguna registrada"}",
                         style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
                         color = Color(0xFF1F2937)
                     )
 
+                    // Fila 3: Texto legal
                     Text(
                         text = "En apego al Principio de Minimización de Datos y a la LFPDPPP (México), sus docentes únicamente reciben los apoyos pedagógicos necesarios para su clase. Su diagnóstico clínico nunca es visible salvo autorización expresa suya por asignatura.",
                         style = MaterialTheme.typography.bodySmall,
@@ -327,12 +331,11 @@ fun StudentHomeScreen(
                 )
                 Button(
                     onClick = { showAddAccommodationDialog = true },
-                    contentPadding = ButtonDefaults.ButtonWithIconContentPadding,
+                    contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 8.dp),
                     shape = RoundedCornerShape(12.dp)
                 ) {
                     Icon(imageVector = Icons.Default.Add, contentDescription = null, modifier = Modifier.size(16.dp))
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text("Agregar", fontSize = 13.sp)
+                    // Solo el ícono, sin texto, o con texto "Añadir"
                 }
             }
         }
