@@ -2,121 +2,154 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    function isAuthenticated() {
+    function signedIn() {
       return request.auth != null;
     }
 
-    function isUser(userId) {
-      return isAuthenticated() && request.auth.uid == userId;
+    function isOwner(uid) {
+      return signedIn() && request.auth.uid == uid;
     }
 
-    function isAdmin() {
-      return isAuthenticated() && (
-        request.auth.token.role == 'admin' ||
-        request.auth.token.role == 'administrator' ||
-        request.auth.token.admin == true
-      );
+    // A teacher role can only be assigned through trusted Firebase Admin SDK.
+    function isTeacher() {
+      return signedIn() && request.auth.token.role == 'teacher';
     }
 
-    function hasActiveConsent(studentId) {
-      return isAuthenticated() && (
-        exists(/databases/$(database)/documents/consents/consent_$(studentId)_$(request.auth.uid)) &&
-        get(/databases/$(database)/documents/consents/consent_$(studentId)_$(request.auth.uid)).data.studentId == studentId &&
-        get(/databases/$(database)/documents/consents/consent_$(studentId)_$(request.auth.uid)).data.teacherId == request.auth.uid &&
-        get(/databases/$(database)/documents/consents/consent_$(studentId)_$(request.auth.uid)).data.isRevoked == false
-      );
+    function isStudent(uid) {
+      return signedIn()
+        && request.auth.uid == uid
+        && exists(/databases/$(database)/documents/users/$(uid))
+        && get(/databases/$(database)/documents/users/$(uid)).data.role == 'student'
+        && get(/databases/$(database)/documents/users/$(uid)).data.isApproved == true;
     }
 
-    // 1. Users Collection: Strict Whitelist on Update
-    match /users/{userId} {
-      allow read: if isAuthenticated();
-
-      allow create: if isUser(userId) && (
-        (!('role' in request.resource.data) || request.resource.data.role == 'student') &&
-        (!('isApproved' in request.resource.data) || request.resource.data.isApproved == true || request.resource.data.isApproved == false)
-      );
-
-      allow update: if (
-        isUser(userId) &&
-        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['fullName', 'studentNumber', 'updatedAt']) &&
-        request.resource.data.role == resource.data.role &&
-        request.resource.data.isApproved == resource.data.isApproved &&
-        request.resource.data.email == resource.data.email
-      ) || isAdmin();
-
-      allow delete: if isAdmin();
+    function consentPath(studentUid) {
+      return /databases/$(database)/documents/consents/consent_$(studentUid)_$(request.auth.uid);
     }
 
-    // 2. Consents Collection
+    function hasConsent(studentUid, permission) {
+      return isTeacher()
+        && exists(consentPath(studentUid))
+        && get(consentPath(studentUid)).data.studentUid == studentUid
+        && get(consentPath(studentUid)).data.teacherUid == request.auth.uid
+        && get(consentPath(studentUid)).data.isRevoked == false
+        && get(consentPath(studentUid)).data[permission] == true;
+    }
+
+    function hasAnyConsent(studentUid) {
+      return hasConsent(studentUid, 'shareAccommodations')
+        || hasConsent(studentUid, 'shareCommunicationPrefs')
+        || hasConsent(studentUid, 'shareEmergencyProtocol')
+        || hasConsent(studentUid, 'shareClinicalDiagnosis');
+    }
+
+    // User accounts: students may register themselves, but cannot create teachers.
+    // Teacher claims are provisioned only by a trusted backend/Admin SDK.
+    match /users/{uid} {
+      allow get: if isOwner(uid);
+      allow list: if false;
+
+      allow create: if isOwner(uid)
+        && request.resource.data.keys().hasOnly([
+          'id', 'fullName', 'email', 'studentId', 'role',
+          'isApproved', 'createdAt', 'updatedAt'
+        ])
+        && request.resource.data.id == uid
+        && request.resource.data.role == 'student'
+        && request.resource.data.isApproved == true
+        && request.resource.data.email == request.auth.token.email;
+
+      allow update: if isStudent(uid)
+        && request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly(['fullName', 'studentNumber', 'updatedAt'])
+        && request.resource.data.role == resource.data.role
+        && request.resource.data.isApproved == resource.data.isApproved
+        && request.resource.data.email == resource.data.email;
+
+      allow delete: if false;
+    }
+
+    // Student root document contains only ordinary academic/profile information.
+    match /students/{studentUid} {
+      allow get: if isOwner(studentUid) || hasAnyConsent(studentUid);
+      allow list: if false;
+      allow create, update: if isStudent(studentUid);
+      allow delete: if false;
+
+      // Documents in this collection are independently permissioned.
+      match /shared/{documentId} {
+        allow get: if isOwner(studentUid)
+          || (documentId == 'accommodations' && hasConsent(studentUid, 'shareAccommodations'))
+          || (documentId == 'communication' && hasConsent(studentUid, 'shareCommunicationPrefs'));
+        allow list: if false;
+        allow create, update: if isStudent(studentUid)
+          && documentId in ['accommodations', 'communication'];
+        allow delete: if isStudent(studentUid);
+      }
+
+      // Highly sensitive documents: never available through collection queries.
+      match /private/{documentId} {
+        allow get: if isOwner(studentUid)
+          || (documentId == 'clinical' && hasConsent(studentUid, 'shareClinicalDiagnosis'))
+          || (documentId == 'emergency' && hasConsent(studentUid, 'shareEmergencyProtocol'));
+        allow list: if false;
+        allow create, update: if isStudent(studentUid)
+          && documentId in ['clinical', 'emergency'];
+        allow delete: if isStudent(studentUid);
+      }
+    }
+
+    // One consent per student-teacher pair. No course-level expiry.
     match /consents/{consentId} {
-      allow read: if isAuthenticated() && (
-        resource.data.studentId == request.auth.uid ||
-        resource.data.teacherId == request.auth.uid ||
-        isAdmin()
-      );
+      allow get: if signedIn()
+        && (resource.data.studentUid == request.auth.uid
+          || resource.data.teacherUid == request.auth.uid);
+      allow list: if false;
 
-      allow create: if isAuthenticated() &&
-        request.resource.data.studentId == request.auth.uid &&
-        request.resource.data.isRevoked == false;
+      allow create: if isStudent(request.auth.uid)
+        && consentId == 'consent_' + request.auth.uid + '_' + request.resource.data.teacherUid
+        && request.resource.data.studentUid == request.auth.uid
+        && request.resource.data.teacherUid is string
+        && request.resource.data.isRevoked == false
+        && request.resource.data.keys().hasOnly([
+          'studentUid', 'teacherUid',
+          'shareAccommodations', 'shareCommunicationPrefs',
+          'shareEmergencyProtocol', 'shareClinicalDiagnosis',
+          'isRevoked', 'grantedAtMillis', 'updatedAt'
+        ])
+        && request.resource.data.keys().hasAll([
+          'studentUid', 'teacherUid',
+          'shareAccommodations', 'shareCommunicationPrefs',
+          'shareEmergencyProtocol', 'shareClinicalDiagnosis',
+          'isRevoked', 'grantedAtMillis'
+        ]);
 
-      allow update: if isAuthenticated() && (
-        (
-          resource.data.studentId == request.auth.uid &&
-          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['isRevoked', 'revokedTimestamp', 'updatedAt']) &&
-          request.resource.data.isRevoked == true &&
-          request.resource.data.studentId == resource.data.studentId &&
-          request.resource.data.teacherId == resource.data.teacherId
-        ) || isAdmin()
-      );
+      allow update: if isStudent(resource.data.studentUid)
+        && resource.data.studentUid == request.auth.uid
+        && request.resource.data.studentUid == resource.data.studentUid
+        && request.resource.data.teacherUid == resource.data.teacherUid
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'shareAccommodations', 'shareCommunicationPrefs',
+          'shareEmergencyProtocol', 'shareClinicalDiagnosis',
+          'isRevoked', 'updatedAt'
+        ]);
 
-      allow delete: if isAdmin();
+      allow delete: if false;
     }
 
-    // 3. Students / Student Profiles Collection
-    match /students/{studentId} {
-      allow read: if isUser(studentId) || hasActiveConsent(studentId) || isAdmin();
-      allow create, update: if isUser(studentId) || isAdmin();
-      allow delete: if isUser(studentId) || isAdmin();
-    }
-
-    match /studentProfiles/{profileId} {
-      allow read: if isUser(profileId) || hasActiveConsent(profileId) || isAdmin();
-      allow create, update: if isUser(profileId) || isAdmin();
-      allow delete: if isUser(profileId) || isAdmin();
-    }
-
-    // 4. Audit Logs Collection
+    // Authoritative audit records must be written by trusted backend code only.
     match /auditLogs/{logId} {
-      allow create: if isAuthenticated() &&
-        request.resource.data.actorUid == request.auth.uid;
-
-      allow read: if isAuthenticated() && (
-        ('studentId' in resource.data && resource.data.studentId == request.auth.uid) ||
-        ('studentUid' in resource.data && resource.data.studentUid == request.auth.uid) ||
-        ('teacherId' in resource.data && resource.data.teacherId == request.auth.uid) ||
-        ('teacherUid' in resource.data && resource.data.teacherUid == request.auth.uid) ||
-        resource.data.actorUid == request.auth.uid ||
-        isAdmin()
-      );
-
-      allow update, delete: if false;
+      allow read, write: if false;
     }
 
+    // Legacy audit collection is also closed to prevent bypass through old paths.
     match /audit_logs/{logId} {
-      allow create: if isAuthenticated() &&
-        request.resource.data.actorUid == request.auth.uid;
-
-      allow read: if isAuthenticated() && (
-        ('studentId' in resource.data && resource.data.studentId == request.auth.uid) ||
-        ('studentUid' in resource.data && resource.data.studentUid == request.auth.uid) ||
-        ('teacherId' in resource.data && resource.data.teacherId == request.auth.uid) ||
-        ('teacherUid' in resource.data && resource.data.teacherUid == request.auth.uid) ||
-        resource.data.actorUid == request.auth.uid ||
-        isAdmin()
-      );
-
-      allow update, delete: if false;
+      allow read, write: if false;
     }
 
+    // Deny every collection/document not explicitly allowed above.
+    match /{document=**} {
+      allow read, write: if false;
+    }
   }
 }
