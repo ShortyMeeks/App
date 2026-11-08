@@ -19,6 +19,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Assignment
@@ -31,6 +32,7 @@ import androidx.compose.material.icons.filled.Security
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Verified
 import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -42,6 +44,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -58,6 +61,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.R
@@ -76,16 +81,26 @@ fun StudentHomeScreen(
     courses: List<Course>,
     consents: List<ConsentGrant>,
     onOpenProfileEditor: () -> Unit,
-    onShowPrivacyNotice: () -> Unit,
-    onLogout: () -> Unit
+    onShowPrivacyNotice: () -> Unit
 ) {
     val context = LocalContext.current
     var editingCourseConsent by remember { mutableStateOf<Course?>(null) }
     var showAddAccommodationDialog by remember { mutableStateOf(false) }
 
+    // ESTADO NUEVO PARA EL DIALOGO DE MATERIA
+    var showAddCourseDialog by remember { mutableStateOf(false) }
+
     if (profile == null) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Text("Cargando perfil de apoyos estudiantiles...")
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Text("Aún no tienes un perfil de apoyos creado.", style = MaterialTheme.typography.bodyLarge)
+                Spacer(modifier = Modifier.height(16.dp))
+                Button(onClick = onOpenProfileEditor) {
+                    Icon(Icons.Default.Add, contentDescription = null)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("CREAR MI PERFIL DE APOYOS")
+                }
+            }
         }
         return
     }
@@ -106,15 +121,43 @@ fun StudentHomeScreen(
                 elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
             ) {
                 Column {
-                    Image(
-                        painter = painterResource(id = R.drawable.inclusive_hero_1794086316379),
-                        contentDescription = "Ilustración de aula inclusiva",
+                    Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(150.dp)
-                            .clip(RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp)),
-                        contentScale = ContentScale.Crop
-                    )
+                            .height(120.dp)
+                            .clip(RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp))
+                            .background(
+                                androidx.compose.ui.graphics.Brush.linearGradient(
+                                    colors = listOf(
+                                        Color(0xFFE0F2FE), // Azul cielo muy claro
+                                        Color(0xFFD1FAE5)  // Verde menta suave
+                                    )
+                                )
+                            ),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                imageVector = Icons.Default.School,
+                                contentDescription = "Bienestar",
+                                tint = Color(0xFF0F766E),
+                                modifier = Modifier.size(48.dp)
+                            )
+                            Spacer(modifier = Modifier.width(16.dp))
+                            Column {
+                                Text(
+                                    text = "Espacio Seguro",
+                                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                                    color = Color(0xFF0F766E)
+                                )
+                                Text(
+                                    text = "Configuración de Apoyos",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = Color(0xFF0F766E).copy(alpha = 0.8f)
+                                )
+                            }
+                        }
+                    }
                     Column(modifier = Modifier.padding(16.dp)) {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
@@ -160,14 +203,15 @@ fun StudentHomeScreen(
 
                         Spacer(modifier = Modifier.height(14.dp))
 
-                        // Botones de acción principales del estudiante
+
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
+
                             Button(
                                 onClick = onOpenProfileEditor,
-                                modifier = Modifier.weight(1f).height(44.dp),
+                                modifier = Modifier.fillMaxWidth().height(48.dp), // Altura táctil recomendada (HCI)
                                 shape = RoundedCornerShape(12.dp)
                             ) {
                                 Icon(
@@ -175,20 +219,12 @@ fun StudentHomeScreen(
                                     contentDescription = null,
                                     modifier = Modifier.size(18.dp)
                                 )
-                                Spacer(modifier = Modifier.width(6.dp))
+                                Spacer(modifier = Modifier.width(8.dp))
                                 Text(
-                                    text = if (profile.accommodations.isEmpty()) "CREAR MI PERFIL DE APOYOS" else "EDITAR MI PERFIL DE APOYOS",
+                                    text = if (profile.accommodations.isEmpty()) "CREAR MI PERFIL" else "EDITAR MI PERFIL",
                                     fontWeight = FontWeight.Bold,
-                                    fontSize = 12.sp
+                                    fontSize = 14.sp
                                 )
-                            }
-
-                            OutlinedButton(
-                                onClick = onLogout,
-                                shape = RoundedCornerShape(12.dp),
-                                modifier = Modifier.height(44.dp)
-                            ) {
-                                Text("Cerrar Sesión", fontSize = 12.sp)
                             }
                         }
                     }
@@ -320,6 +356,33 @@ fun StudentHomeScreen(
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
+
+            // BOTÓN PARA AGREGAR MATERIA
+            Button(
+                onClick = { showAddCourseDialog = true },
+                modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+                shape = RoundedCornerShape(12.dp)
+            ) {
+                Icon(Icons.Default.Add, contentDescription = null)
+                Spacer(modifier = Modifier.width(8.dp))
+                Text("Agregar Materia y Docente")
+            }
+        }
+
+        if (courses.isEmpty()) {
+            item {
+                Box(
+                    modifier = Modifier.fillMaxWidth().padding(24.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "No has agregado ninguna materia aún.\nPresiona el botón de arriba para compartir tu perfil con un docente.",
+                        textAlign = TextAlign.Center,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
         }
 
         items(courses) { course ->
@@ -403,6 +466,65 @@ fun StudentHomeScreen(
                 showAddAccommodationDialog = false
             },
             onDismiss = { showAddAccommodationDialog = false }
+        )
+    }
+
+    // NUEVO DIÁLOGO PARA AGREGAR MATERIA
+    if (showAddCourseDialog) {
+        var courseCode by remember { mutableStateOf("") }
+        var courseName by remember { mutableStateOf("") }
+        var teacherName by remember { mutableStateOf("") }
+        var teacherEmail by remember { mutableStateOf("") }
+
+        AlertDialog(
+            onDismissRequest = { showAddCourseDialog = false },
+            title = { Text("Agregar Materia") },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    OutlinedTextField(
+                        value = courseCode,
+                        onValueChange = { courseCode = it },
+                        label = { Text("Código (Ej. CS-301)") },
+                        singleLine = true
+                    )
+                    OutlinedTextField(
+                        value = courseName,
+                        onValueChange = { courseName = it },
+                        label = { Text("Nombre de la materia") },
+                        singleLine = true
+                    )
+                    OutlinedTextField(
+                        value = teacherName,
+                        onValueChange = { teacherName = it },
+                        label = { Text("Nombre del Docente") },
+                        singleLine = true
+                    )
+                    OutlinedTextField(
+                        value = teacherEmail,
+                        onValueChange = { teacherEmail = it },
+                        label = { Text("Correo del Docente (Firebase)") },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                        singleLine = true
+                    )
+                }
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        if (courseCode.isNotBlank() && teacherEmail.isNotBlank()) {
+                            viewModel.addCustomCourse(courseCode, courseName, teacherName, teacherEmail)
+                            showAddCourseDialog = false
+                        }
+                    }
+                ) {
+                    Text("Agregar")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showAddCourseDialog = false }) {
+                    Text("Cancelar")
+                }
+            }
         )
     }
 
